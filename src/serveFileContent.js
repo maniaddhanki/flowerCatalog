@@ -2,7 +2,8 @@ const types = {
   jpg: 'image/jpg',
   html: 'text/html',
   txt: 'text/plain',
-  css: 'text/css'
+  css: 'text/css',
+  pdf: 'application/pdf'
 };
 
 const serveFileContent = ({ uri }, response, fileContent) => {
