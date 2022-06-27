@@ -1,15 +1,25 @@
-const fs = require('fs');
+const types = {
+  jpg: 'image/jpg',
+  html: 'text/html',
+  txt: 'text/plain',
+  css: 'text/css'
+};
 
 const serveFileContent = ({ uri }, response, fileContent) => {
   if (uri === '/') {
-    uri = '/index.html';
+    uri = '/home-page.html';
   }
 
-  if (!fileContent[uri.slice(1)]) {
+  const fileName = uri.slice(1);
+
+  if (!fileContent[fileName]) {
     return false;
   }
 
-  response.send(fileContent[uri.slice(1)]);
+  const extensionIndex = fileName.lastIndexOf('.');
+  const extension = fileName.slice(extensionIndex + 1);
+  response.setHeaders('content-type', types[extension]);
+  response.send(fileContent[fileName]);
   return true;
 };
 

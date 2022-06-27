@@ -27,6 +27,7 @@ const readComments = (queryArgs, response) => {
   const link = styleTag('form.css');
   const head = toHtml(title + link, 'head');
   const body = toHtml(form + commentSection, 'body');
+  response.setHeaders('content-type', 'html');
   response.send(toHtml(head + body, 'html'));
   return true;
 };

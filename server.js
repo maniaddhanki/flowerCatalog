@@ -7,6 +7,7 @@ const { createCache } = require('./src/createCache.js');
 
 const unFoundHandler = (request, response) => {
   response.status = 404;
+  response.setHeaders('content-type', 'text/plain');
   response.send('Not found');
   return true;
 }
