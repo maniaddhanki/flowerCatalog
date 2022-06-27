@@ -19,7 +19,7 @@ const toString = (comment) => {
 const styleTag = css => `<link rel="stylesheet" href="${css}"/>`;
 
 const readComments = (queryArgs, response) => {
-  const form = fs.readFileSync('public/comment-form.html', 'utf8');
+  const form = fs.readFileSync('public/htmls/comment-form.html', 'utf8');
   const commentlist = comments.map(comment => toHtml(toString(comment), 'li'));
   const sectionHeading = toHtml('Datetime_Name_Comment', 'h2');
   const commentSection = toHtml(sectionHeading + commentlist.join(''), 'section');
