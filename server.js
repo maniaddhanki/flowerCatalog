@@ -1,5 +1,6 @@
 const { createServer } = require('net');
 const { parseRequest } = require('./src/parseRequest.js');
+const { dynamicHandler } = require('./src/dynamicHandler.js');
 const { serveFileContent } = require('./src/serveFileContent.js');
 const { Response } = require('./src/response.js');
 const { createCache } = require('./src/createCache.js');
@@ -39,7 +40,7 @@ const launchServer = (Port, directory = 'public') => {
 
 const fileContent = {}
 
-const handlers = [serveFileContent, unFoundHandler];
+const handlers = [dynamicHandler, serveFileContent, unFoundHandler];
 
 const [directory] = process.argv.slice(2);
 
