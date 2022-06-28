@@ -4,12 +4,19 @@ const toHtml = (body, tag) => `<${tag}>${body}</${tag}>`;
 
 const comments = [];
 
+const redirect = (location, response) => {
+  response.setHeaders('location', location);
+  response.status = 301;
+  response.send('');
+  return true;
+};
+
 const writeComment = (queryArgs, response) => {
   const { name, comment } = queryArgs;
   const date = new Date();
   const dateTime = date.toLocaleString();
   comments.unshift({ dateTime, name, comment });
-  readComments(queryArgs, response);
+  return redirect('/read-comments', response);
 };
 
 const toString = (comment) => {
