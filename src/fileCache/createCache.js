@@ -26,4 +26,3 @@ const createCache = (directory, cacheHolder) => {
 };
 
 exports.createCache = createCache;
-// createCache('public/pokemon_webpages', {});
