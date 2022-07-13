@@ -1,4 +1,4 @@
-const { guestBookHandler } = require('./handlers/guestBookHandler.js');
+const { guestBookRouter } = require('./handlers/guestBookHandler.js');
 const { staticHandler } = require('./handlers/staticHandler.js');
 const { unFoundHandler } = require("./handlers/unFoundHandler");
 const { createCache } = require('./fileCache/createCache.js');
@@ -17,10 +17,10 @@ const { serveFileContent } = require('./handlers/serveFileContent.js');
 
 const fileContents = {};
 
-const createApp = ({ root = './public', logger = console.log }, sessions = {}, users = {}) => {
+const createApp = ({ root = './public', logger = () => { } }, sessions = {}, users = {}) => {
   createCache(root, fileContents);
 
-  const handlers = [parseUrl, logHandler(logger), parseBodyParams, dependencyHandler(fileContents), injectCookie, injectSession(sessions), signupHandler(users), loginHandler(sessions), logoutHandler(sessions), staticHandler, apiHandler, guestBookHandler, serveFileContent, unFoundHandler];
+  const handlers = [parseUrl, logHandler(logger), parseBodyParams, dependencyHandler(fileContents), injectCookie, injectSession(sessions), signupHandler(users), loginHandler(sessions), logoutHandler(sessions), staticHandler, apiHandler, guestBookRouter, serveFileContent, unFoundHandler];
 
   return createRouter(handlers);
 };

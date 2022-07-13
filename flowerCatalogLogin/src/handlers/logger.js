@@ -1,5 +1,5 @@
 const logHandler = logger => (req, res, next) => {
-  logger(req.headers);
+  logger(req.method);
   logger(req.url);
   next();
 };

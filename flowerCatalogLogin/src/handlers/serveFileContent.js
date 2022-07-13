@@ -17,9 +17,7 @@ const setType = ext => {
 
 const serveFileContent = (request, response, next) => {
   const relpath = '.' + request.url.pathname;
-  console.log(relpath);
   const filePath = path.parse(relpath);
-  console.log(filePath);
 
 
   if (!fs.existsSync(relpath)) {

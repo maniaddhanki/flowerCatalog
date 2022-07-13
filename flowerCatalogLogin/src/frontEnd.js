@@ -1,6 +1,5 @@
 const makeXhr = (callBack, { method, url }, body = '') => {
   const xhr = new XMLHttpRequest();
-  console.log(`sending ${method} ${url} with ${body}`);
   xhr.onload = callBack.bind(null, xhr);
   xhr.open(method, url);
   xhr.send(body);
@@ -63,7 +62,7 @@ const main = () => {
   const submit = document.querySelector('#submit');
   const request = {
     method: 'POST',
-    url: 'http://localhost:8080/write-comment'
+    url: 'http://localhost:8080/guest-book'
   };
   submit.onclick = () => {
     makeXhr(upDateComments, request, parseForm());

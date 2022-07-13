@@ -23,6 +23,7 @@ const toString = comment => {
 
 const readComments = (request, response, next) => {
   const { comments, form } = request;
+  // console.log(comments);
   const commentLog = comments.map(comment => toHtml(toString(comment), 'li'));
   const commentList = toHtml(commentLog.join(''), 'ol');
   const guestBook = form.replace('--comments--', commentList);
@@ -31,28 +32,29 @@ const readComments = (request, response, next) => {
   response.end(guestBook);
 };
 
-const redirect = (req, res) => {
-  res.statusCode = 302;
-  res.setHeader('location', '/login');
-  res.end('login to guestBook');
-}
-
-const guestBookHandler = (request, response, next) => {
+const guestBookRouter = (request, response, next) => {
   const { pathname } = request.url;
   const { method } = request;
 
+  if (pathname !== '/guest-book') {
+    next();
+    return;
+  }
+
   if (!request.session) {
-    redirect(request, response, next);
+    response.statusCode = 302;
+    response.setHeader('location', '/login');
+    response.end('login to guestBook');
     return;
   };
 
-  if (pathname === '/write-comment' && method === 'POST') {
+  if (method === 'POST') {
     return writeComment(request, response, next);
   }
-  if (pathname === '/read-comments' && method === 'GET') {
+  if (method === 'GET') {
+    console.log('hello');
     return readComments(request, response, next);
   }
-  next();
 };
 
-module.exports = { guestBookHandler };
+module.exports = { guestBookRouter };
