@@ -31,9 +31,20 @@ const readComments = (request, response, next) => {
   response.end(guestBook);
 };
 
+const redirect = (req, res) => {
+  res.statusCode = 302;
+  res.setHeader('location', '/login');
+  res.end('login to guestBook');
+}
+
 const guestBookHandler = (request, response, next) => {
   const { pathname } = request.url;
   const { method } = request;
+
+  if (!request.session) {
+    redirect(request, response, next);
+    return;
+  };
 
   if (pathname === '/write-comment' && method === 'POST') {
     return writeComment(request, response, next);

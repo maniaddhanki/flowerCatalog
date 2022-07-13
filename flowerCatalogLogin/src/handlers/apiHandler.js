@@ -6,6 +6,7 @@ const apiHandler = (req, res, next) => {
       if (err) {
         res.statusCode = 404;
         res.end();
+        return;
       }
       res.statusCode = 200;
       res.end(data);

@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/maniaddhanki/flowerCatalog/issues"
   },
-  "homepage": "https://github.com/maniaddhanki/flowerCatalog#readme"
+  "homepage": "https://github.com/maniaddhanki/flowerCatalog#readme",
+  "dependencies": {
+    "supertest": "^6.2.4"
+  }
 }

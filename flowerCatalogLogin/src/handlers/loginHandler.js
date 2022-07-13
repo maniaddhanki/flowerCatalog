@@ -35,7 +35,7 @@ const loginHandler = (sessions) => (req, res, next) => {
 
   if (req.session) {
     res.statusCode = 302;
-    res.setHeader('Location', '/protected');
+    res.setHeader('Location', '/');
     res.end('already logged in');
     return;
   }
@@ -54,7 +54,7 @@ const loginHandler = (sessions) => (req, res, next) => {
 
     res.setHeader('Set-Cookie', `sessionId=${sessionId}`);
     res.statusCode = 302;
-    res.setHeader('location', '/home-page.html');
+    res.setHeader('location', '/read-comments');
     res.end();
   }
 };

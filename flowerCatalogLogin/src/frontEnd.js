@@ -6,19 +6,32 @@ const makeXhr = (callBack, { method, url }, body = '') => {
   xhr.send(body);
 };
 
+const toString = comment => {
+  const entries = Object.values(comment);
+  return entries.join(' ');
+};
+
 const toHtml = (comments) => {
   const commentElements = comments.map(comment => {
     const li = document.createElement('li');
-    li.innerText = comment;
+    li.innerText = toString(comment);
     return li;
   })
-  return commentElements.join('');
+  return commentElements;
 };
 
-const writeComments = (xhr) => {
-  const commentList = document.querySelector('.comment-section > ol');
+const writeComments = (commentElements) => {
+  const commentList = document.querySelector('#comment-list');
+  const orderedList = document.createElement('ol');
+  commentList.innerText = null;
+  commentList.appendChild(orderedList);
+  commentElements.forEach(comment => orderedList.appendChild(comment));
+};
+
+const parseComments = (xhr) => {
   const comments = JSON.parse(xhr.response);
-  commentList.innerHtml = toHtml(comments);
+  const commentElements = toHtml(comments);
+  writeComments(commentElements);
 };
 
 const upDateComments = (xhr) => {
@@ -27,15 +40,22 @@ const upDateComments = (xhr) => {
       method: 'GET',
       url: 'http://localhost:8080/api.read-comments'
     };
-    makeXhr(writeComments, request);
+    makeXhr(parseComments, request);
   }
+};
+
+const clearForm = () => {
+  const name = document.querySelector('#name');
+  const comment = document.querySelector('#comment');
+  name.value = '';
+  comment.value = '';
 };
 
 const parseForm = () => {
   const form = document.querySelector('form');
   const formData = new FormData(form);
   const parsedForm = new URLSearchParams(formData);
-  console.log(parsedForm.toString());
+  clearForm();
   return parsedForm.toString();
 };
 
