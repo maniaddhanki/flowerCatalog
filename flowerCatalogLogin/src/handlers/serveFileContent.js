@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 
 const types = {
   jpg: 'image/jpg',
@@ -6,32 +7,36 @@ const types = {
   txt: 'text/plain',
   css: 'text/css',
   pdf: 'application/pdf',
-  gif: 'application/gif'
+  gif: 'application/gif',
+  js: 'js/javascript'
 };
 
-const setType = fileName => {
-  const extensionIndex = fileName.lastIndexOf('.');
-  const extension = fileName.slice(extensionIndex + 1);
-  return types[extension];
+const setType = ext => {
+  return types[ext.slice(1)];
 };
 
-const serveFileContent = (request, response) => {
-  const fileContent = request.fileContents;
+const serveFileContent = (request, response, next) => {
+  const relpath = '.' + request.url.pathname;
+  console.log(relpath);
+  const filePath = path.parse(relpath);
+  console.log(filePath);
 
-  if (request.url.pathname === '/') {
-    request.url.pathname = 'home-page.html';
+
+  if (!fs.existsSync(relpath)) {
+    return next();
   }
 
-  const filePath = path.parse(request.url.pathname);
-
-  if (!fileContent[filePath.base]) {
-    return false;
-  }
-
-  response.statusCode = 200;
-  response.setHeader('content-type', setType(filePath.base));
-  response.end(fileContent[filePath.base]);
-  return true;
+  fs.readFile(relpath, (err, data) => {
+    if (err) {
+      response.statusCode = 404;
+      response.end();
+      return;
+    }
+    response.statusCode = 200;
+    response.setHeader('content-type', setType(filePath.ext));
+    response.end(data);
+  })
+  return;
 };
 
 module.exports = { serveFileContent };

@@ -1,12 +1,6 @@
 const fs = require('fs');
 const toHtml = (body, tag) => `<${tag}>${body}</${tag}>`;
 
-const redirect = (location, response) => {
-  response.setHeader('location', location);
-  response.statusCode = 302;
-  response.end('');
-};
-
 const presist = commentLog => {
   fs.writeFileSync('src/data/comments.json', JSON.stringify(commentLog), 'utf8');
 };
@@ -18,7 +12,8 @@ const writeComment = (request, response, next) => {
   const dateTime = date.toLocaleString();
   comments.unshift({ dateTime, name, comment });
   presist(comments);
-  redirect('/read-comments', response);
+  response.statusCode = 201;
+  response.end();
 };
 
 const toString = comment => {
