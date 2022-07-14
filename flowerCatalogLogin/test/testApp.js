@@ -1,4 +1,5 @@
 const { createApp } = require('../src/app.js');
+const assert = require('assert');
 const request = require('supertest');
 
 const createSession = () => {
@@ -9,10 +10,13 @@ const logger = () => { };
 
 describe('GET /home-page.html', () => {
   const app = createApp({ root: './public', logger }, {}, {});
-  it('Should redirect to login page when there is no session', (done) => {
+  it('should give home-page', (done) => {
     request(app)
       .get('/home-page.html')
       .expect(200, done)
+      .expect('content-type', 'text/html')
+      .expect('content-length', '929')
+      .expect(/home page/)
   });
 });
 
@@ -24,7 +28,7 @@ describe('POST /login', () => {
       .send('username=mani')
       .expect(302)
       .expect('')
-      .expect('location', '/read-comments', done)
+      .expect('location', '/guest-book', done)
   });
 
   it('should redirect to home page without creating a session when one is existing', (done) => {
@@ -34,30 +38,95 @@ describe('POST /login', () => {
     request(app)
       .post('/login')
       .send('username=mani')
-      .set('cookie', 'sessionId=12')
+      .set('Cookie', `sessionId=${sessionId}`)
       .expect(302)
       .expect('already logged in')
       .expect('location', '/', done)
   });
 });
 
-describe('POST /signup', () => {
-  it('Should register a user new user signs up', (done) => {
+describe('GET /logout', () => {
+  it('Should logout user and remove session from sessions', (done) => {
+    const session = createSession();
+    const sessionId = session.sessionId;
+    const sessions = { [sessionId]: session };
+    const app = createApp({ root: './public', logger }, sessions, {});
+    request(app)
+      .get('/logout')
+      .set('Cookie', `sessionId=${sessionId}`)
+      .expect(200)
+      .expect('set-cookie', 'id=0;max-age=0')
+      .end(() => {
+        assert.deepStrictEqual(sessions, {});
+        done();
+      })
+  });
+});
+
+describe('GET /api', () => {
+  it('should give comments json', (done) => {
     const app = createApp({ root: './public', logger }, {}, {});
     request(app)
-      .post('/signup')
-      .send('username=avs')
-      .expect('succesfull')
-      .expect(200, done)
+      .get('/api')
+      .expect('content-type', /json/)
+      .expect(200)
+      .expect(/\[.*\]/, done)
+  });
+});
+
+describe('Get /guest-book', () => {
+  it('Should redirect to login page when user is not loged in', (done) => {
+    const app = createApp({ root: './public', logger }, {}, {});
+    request(app)
+      .get('/guest-book')
+      .expect(302)
+      .expect('location', '/login')
+      .expect('login to guest book', done)
   });
 
-  it('should not register user if already exists', (done) => {
-    const users = { avs: { username: 'avs', password: 'avs' } }
-    const app = createApp({ root: './public', logger }, {}, users);
+  it('should give comments html page if user is loged in', (done) => {
+    const session = createSession();
+    const sessionId = session.sessionId;
+    const sessions = { [sessionId]: session };
+    const app = createApp({ root: './public', logger }, sessions, {});
     request(app)
-      .post('/signup')
-      .send('username=avs')
-      .expect('User already exists')
-      .expect(405, done)
+      .get('/guest-book')
+      .set('Cookie', `sessionId=${sessionId}`)
+      .expect(200)
+      .expect('content-type', /html/)
+      .expect(/Guest Book/, done)
+  });
+});
+
+describe('POST /guest-book', () => {
+  it('Should redirect to login page when user is not loged in', (done) => {
+    const app = createApp({ root: './public', logger }, {}, {});
+    request(app)
+      .post('/guest-book')
+      .expect(302)
+      .expect('location', '/login')
+      .expect('login to guest book', done)
+  });
+
+  it('should give comments html page if user is loged in', (done) => {
+    const session = createSession();
+    const sessionId = session.sessionId;
+    const sessions = { [sessionId]: session };
+    const app = createApp({ root: './public', logger }, sessions, {});
+    request(app)
+      .post('/guest-book')
+      .set('Cookie', `sessionId=${sessionId}`)
+      .send('name=avs&comment=avs')
+      .expect(201, done)
+  });
+});
+
+describe('GET /hello', () => {
+  it('Should give not found', (done) => {
+    const app = createApp({ root: './public', logger }, {}, {});
+    request(app)
+      .get('/hello')
+      .expect(404)
+      .expect('Not found', done)
   });
 });

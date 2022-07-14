@@ -44,7 +44,7 @@ const guestBookRouter = (request, response, next) => {
   if (!request.session) {
     response.statusCode = 302;
     response.setHeader('location', '/login');
-    response.end('login to guestBook');
+    response.end('login to guest book');
     return;
   };
 

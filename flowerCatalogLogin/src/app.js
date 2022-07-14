@@ -9,7 +9,7 @@ const { logHandler } = require('./handlers/logger.js');
 const { parseBodyParams } = require('./handlers/parseBodyParams.js');
 const { injectCookie } = require('./handlers/cookiesHandler.js');
 const { loginHandler } = require('./handlers/loginHandler.js');
-const { signupHandler } = require('./handlers/signupHandler.js');
+// const { signupHandler } = require('./handlers/signupHandler.js');
 const { injectSession } = require('./handlers/sessionHandler.js');
 const { logoutHandler } = require('./handlers/logoutHandler.js');
 const { apiHandler } = require('./handlers/apiHandler.js');
@@ -20,7 +20,7 @@ const fileContents = {};
 const createApp = ({ root = './public', logger = () => { } }, sessions = {}, users = {}) => {
   createCache(root, fileContents);
 
-  const handlers = [parseUrl, logHandler(logger), parseBodyParams, dependencyHandler(fileContents), injectCookie, injectSession(sessions), signupHandler(users), loginHandler(sessions), logoutHandler(sessions), staticHandler, apiHandler, guestBookRouter, serveFileContent, unFoundHandler];
+  const handlers = [parseUrl, logHandler(logger), parseBodyParams, dependencyHandler(fileContents), injectCookie, injectSession(sessions), loginHandler(sessions), logoutHandler(sessions), staticHandler, apiHandler, guestBookRouter, serveFileContent, unFoundHandler];
 
   return createRouter(handlers);
 };
