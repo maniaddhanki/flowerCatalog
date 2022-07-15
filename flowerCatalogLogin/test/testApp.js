@@ -8,14 +8,14 @@ const createSession = () => {
 
 const logger = () => { };
 
-describe('GET /home-page.html', () => {
+describe('GET /', () => {
   const app = createApp({ root: './public', logger }, {}, {});
   it('should give home-page', (done) => {
     request(app)
-      .get('/home-page.html')
+      .get('/')
       .expect(200, done)
-      .expect('content-type', 'text/html')
-      .expect('content-length', '929')
+      .expect('content-type', 'text/html; charset=UTF-8')
+      .expect('content-length', '947')
       .expect(/home page/)
   });
 });
@@ -127,6 +127,7 @@ describe('GET /hello', () => {
     request(app)
       .get('/hello')
       .expect(404)
-      .expect('Not found', done)
+      .expect('content-type', 'text/html; charset=utf-8')
+      .expect(/Error/, done)
   });
 });

@@ -1,28 +1,33 @@
-const { guestBookRouter } = require('./handlers/guestBookHandler.js');
-const { staticHandler } = require('./handlers/staticHandler.js');
-const { unFoundHandler } = require("./handlers/unFoundHandler");
-const { createCache } = require('./fileCache/createCache.js');
-const { dependencyHandler } = require("./handlers/dependencyHandler");
-const { createRouter } = require('./asyncRouter.js');
-const { parseUrl } = require('./handlers/parseUrl.js');
+const express = require('express');
+
+const { validateUser, readComments, writeComment } = require('./handlers/guestBookHandler.js');
+const { injectComments, injectTemplate } = require("./handlers/dependencyHandler");
 const { logHandler } = require('./handlers/logger.js');
-const { parseBodyParams } = require('./handlers/parseBodyParams.js');
 const { injectCookie } = require('./handlers/cookiesHandler.js');
-const { loginHandler } = require('./handlers/loginHandler.js');
-// const { signupHandler } = require('./handlers/signupHandler.js');
+const { loginHandler, validateRequest, showLoginPage } = require('./handlers/loginHandler.js');
 const { injectSession } = require('./handlers/sessionHandler.js');
 const { logoutHandler } = require('./handlers/logoutHandler.js');
 const { apiHandler } = require('./handlers/apiHandler.js');
-const { serveFileContent } = require('./handlers/serveFileContent.js');
-
-const fileContents = {};
 
 const createApp = ({ root = './public', logger = () => { } }, sessions = {}, users = {}) => {
-  createCache(root, fileContents);
 
-  const handlers = [parseUrl, logHandler(logger), parseBodyParams, dependencyHandler(fileContents), injectCookie, injectSession(sessions), loginHandler(sessions), logoutHandler(sessions), staticHandler, apiHandler, guestBookRouter, serveFileContent, unFoundHandler];
+  const app = express();
+  app.use(express.static(root));
+  app.use(express.static('src/frontEnd'));
+  app.use(express.urlencoded({ extended: true }));
 
-  return createRouter(handlers);
+  app.use(injectCookie);
+  app.use(injectSession(sessions));
+  app.use(logHandler(logger));
+
+  app.get('/login', showLoginPage);
+  app.post('/login', validateRequest, loginHandler(sessions));
+  app.get('/logout', logoutHandler(sessions));
+
+  app.get('/guest-book', injectComments, injectTemplate, validateUser, readComments);
+  app.post('/guest-book', injectComments, validateUser, writeComment);
+  app.get('/api', injectComments, apiHandler);
+  return app;
 };
 
 module.exports = { createApp };

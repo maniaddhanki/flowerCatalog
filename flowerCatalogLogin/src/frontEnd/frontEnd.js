@@ -37,7 +37,7 @@ const upDateComments = (xhr) => {
   if (xhr.status === 201) {
     const request = {
       method: 'GET',
-      url: 'http://localhost:8080/api.read-comments'
+      url: 'http://localhost:8000/api'
     };
     makeXhr(parseComments, request);
   }
@@ -55,14 +55,14 @@ const parseForm = () => {
   const formData = new FormData(form);
   const parsedForm = new URLSearchParams(formData);
   clearForm();
-  return parsedForm.toString();
+  return parsedForm;
 };
 
 const main = () => {
   const submit = document.querySelector('#submit');
   const request = {
     method: 'POST',
-    url: 'http://localhost:8080/guest-book'
+    url: 'http://localhost:8000/guest-book'
   };
   submit.onclick = () => {
     makeXhr(upDateComments, request, parseForm());

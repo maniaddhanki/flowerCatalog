@@ -25,38 +25,33 @@ const createSession = (username, sessionId) => {
   return { username, time, sessionId };
 };
 
-const loginHandler = (sessions) => (req, res, next) => {
-  const { pathname } = req.url;
-
-  if (pathname !== '/login') {
-    next();
-    return;
-  }
-
+const validateRequest = (req, res, next) => {
   if (req.session) {
     res.statusCode = 302;
     res.setHeader('Location', '/');
     res.end('already logged in');
     return;
   }
+  next();
+};
 
-  if (req.method === 'GET') {
-    showLoginPage(req, res);
+const loginHandler = (sessions) => (req, res, next) => {
+  const username = req.body.username;
+
+  if (!username) {
+    res.statusCode = 405;
+    res.end();
     return;
   }
 
-  const username = req.bodyParams.username;
+  const sessionId = generateSessionId();
+  const session = createSession(username, sessionId);
+  sessions[sessionId] = session;
 
-  if (req.method === 'POST' && username) {
-    const sessionId = generateSessionId();
-    const session = createSession(username, sessionId);
-    sessions[sessionId] = session;
-
-    res.setHeader('Set-Cookie', `sessionId=${sessionId}`);
-    res.statusCode = 302;
-    res.setHeader('location', '/guest-book');
-    res.end();
-  }
+  res.setHeader('Set-Cookie', `sessionId=${sessionId}`);
+  res.statusCode = 302;
+  res.setHeader('location', '/guest-book');
+  res.end();
 };
 
-module.exports = { loginHandler };
+module.exports = { loginHandler, showLoginPage, validateRequest };

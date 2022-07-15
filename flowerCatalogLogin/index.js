@@ -1,4 +1,5 @@
 const { createApp } = require('./src/app.js');
-const { startServer } = require('./src/server/server.js');
 
-startServer(8080, createApp({ root: './public' }, {}));
+const app = createApp({ root: 'public' }, {}, {});
+
+app.listen(8000, () => console.log('listening on port 8000'));
